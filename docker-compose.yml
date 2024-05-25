@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  redis:
+    build: redis/
+    container_name: redis
+    networks:
+      - infra
+    ports:
+      - 6379:6379
+    volumes:
+      - ${PWD}/redis/data:/data
+      - ${PWD}/redis/conf:/usr/local/etc/redis
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+
+  redis-exporter:
+    image: bitnami/redis-exporter:latest
+    container_name: redis-exporter
+    networks:
+      - infra
+    ports:
+      - 9121:9121
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+
+networks:
+  infra:
+    driver: bridge
