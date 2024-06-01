@@ -34,6 +34,14 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
 
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    networks:
+      - infra
+    ports:
+      - 27017:27017
+
   postgres-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter
     container_name: postgres-exporter
