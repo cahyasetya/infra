@@ -24,6 +24,15 @@ services:
     environment:
       - REDIS_ADDR=redis://redis:6379
 
+  postgres:
+    image: postgres
+    container_name: postgres
+    networks:
+      - infra
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
 networks:
   infra:
     driver: bridge
