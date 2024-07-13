@@ -43,20 +43,25 @@ services:
       - 27017:27017
 
   postgres-exporter:
-    image: quay.io/prometheuscommunity/postgres-exporter
+    image: bitnami/postgres-exporter:latest
     container_name: postgres-exporter
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - DATA_SOURCE_NAME=postgresql://postgres:postgres@postgres:5432/users_dev?sslmode=disable
+    ports:
+      - "9187:9187"
     networks:
       - infra
-    ports:
-      - 9187:9187
-    environment:
-      - DATA_SOURCE_NAME="postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable"
-      - STATSD_PORT=9122
+    depends_on:
+      - postgres
 
   gitlab:
     image: gitlab/gitlab-ce:17.1.2-ce.0
     container_name: gitlab
     restart: always
+    networks:
+      - infra
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         gitlab_rails['gitlab_shell_ssh_port'] = 2424
@@ -69,6 +74,16 @@ services:
       - '$GITLAB_HOME/logs:/var/log/gitlab'
       - '$GITLAB_HOME/data:/var/opt/gitlab'
     shm_size: '256m'
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    networks:
+      - infra
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
 
 networks:
   infra:
