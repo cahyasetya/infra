@@ -53,6 +53,23 @@ services:
       - DATA_SOURCE_NAME="postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable"
       - STATSD_PORT=9122
 
+  gitlab:
+    image: gitlab/gitlab-ce:17.1.2-ce.0
+    container_name: gitlab
+    restart: always
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        gitlab_rails['gitlab_shell_ssh_port'] = 2424
+    ports:
+      - 80:80
+      - 443:443
+      - 2222:22
+    volumes:
+      - '$GITLAB_HOME/config:/etc/gitlab'
+      - '$GITLAB_HOME/logs:/var/log/gitlab'
+      - '$GITLAB_HOME/data:/var/opt/gitlab'
+    shm_size: '256m'
+
 networks:
   infra:
     driver: bridge
